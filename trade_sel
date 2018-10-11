@@ -9,14 +9,36 @@ driver.get('https://www.drinktrade.com/coffee/all-coffee/')
 # Perform actions on HTML elements, entering text and submitting the form
 
 # Find number of products on page
-#number = driver.find_element_by_xpath('//span[@class="filter-qty text-body-2-desktop"]').text
-number = driver.find_element_by_xpath('.//span[@class="filter-qty text-body-2-desktop"]')
-num = number.get_attribute('InnerHTML')
-number_text = number.text
-number_attribute = number.get_attribute('class')
+number = driver.find_element_by_xpath('//span[@class="filter-qty text-body-2-desktop"]').get_attribute('innerText').split(' ')[0]
 
-print(num)
-print('+++++++')
-print(number_text)
-print('+++++++')
-print(number_attribute)
+# Find url to coffee detail
+detail_xpath = ['//div[@data-reactid="318"]/div[{}]/div/a'.format(x) for x in range(1, int(number)+ 1)]
+
+# List comprehension to construct all the detail urls
+urls = [driver.find_element_by_xpath(path).get_attribute('href') for path in detail_xpath]
+
+# Navigate to product webpage
+
+for url in urls[:30] :
+    driver.get(url)
+
+    # Initialize an empty dictionary for each coffee
+    coffee = {}
+
+    # Use relative xpath to locate the title, text, username, date.
+    name = driver.find_element_by_xpath('//h1[@class="product-name text-display-2-mobile text-display-2-desktop"]').text
+    roaster = driver.find_element_by_xpath('//h2[@class="roaster-name text-title-mobile text-title-desktop"]').text
+    descriptor = driver.find_element_by_xpath('//div[@class="description-container text-body-2-mobile text-body-2-desktop"]').text
+    flavornotes = driver.find_element_by_xpath('//ul[@class="taste-features"]/li').text
+    price = driver.find_element_by_xpath('//span[@class="product-price"]').text
+    weight = driver.find_element_by_xpath('//span[@class="product-size"]').text
+
+    coffee['name'] = name
+    coffee['roaster'] = roaster
+    coffee['descriptor'] = descriptor
+    coffee['flavornotes'] = flavornotes
+    coffee['price'] = price
+    coffee['weight'] = weight
+
+    print(coffee)
+    print('-' * 50)
