@@ -1,0 +1,22 @@
+from selenium import webdriver
+
+# Create instance of a driver
+driver = webdriver.Chrome()
+
+# Navitgate to web page of interest
+driver.get('https://www.drinktrade.com/coffee/all-coffee/')
+
+# Perform actions on HTML elements, entering text and submitting the form
+
+# Find number of products on page
+#number = driver.find_element_by_xpath('//span[@class="filter-qty text-body-2-desktop"]').text
+number = driver.find_element_by_xpath('.//span[@class="filter-qty text-body-2-desktop"]')
+num = number.get_attribute('InnerHTML')
+number_text = number.text
+number_attribute = number.get_attribute('class')
+
+print(num)
+print('+++++++')
+print(number_text)
+print('+++++++')
+print(number_attribute)
