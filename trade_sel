@@ -1,5 +1,9 @@
 from selenium import webdriver
-
+from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+import csv
+import re
 # Create instance of a driver
 driver = webdriver.Chrome()
 
@@ -7,7 +11,6 @@ driver = webdriver.Chrome()
 driver.get('https://www.drinktrade.com/coffee/all-coffee/')
 
 # Perform actions on HTML elements, entering text and submitting the form
-
 # Find number of products on page
 number = driver.find_element_by_xpath('//span[@class="filter-qty text-body-2-desktop"]').get_attribute('innerText').split(' ')[0]
 
@@ -17,9 +20,13 @@ detail_xpath = ['//div[@data-reactid="318"]/div[{}]/div/a'.format(x) for x in ra
 # List comprehension to construct all the detail urls
 urls = [driver.find_element_by_xpath(path).get_attribute('href') for path in detail_xpath]
 
-# Navigate to product webpage
+# Create csv file to save scraped data
+csv_file = open('trade.csv', 'w', encoding='utf-8')
+writer = csv.writer(csv_file)
 
-for url in urls[:30] :
+# Navigate to product webpage
+i = 0
+for url in urls[:10]:
     driver.get(url)
 
     # Initialize an empty dictionary for each coffee
@@ -29,16 +36,41 @@ for url in urls[:30] :
     name = driver.find_element_by_xpath('//h1[@class="product-name text-display-2-mobile text-display-2-desktop"]').text
     roaster = driver.find_element_by_xpath('//h2[@class="roaster-name text-title-mobile text-title-desktop"]').text
     descriptor = driver.find_element_by_xpath('//div[@class="description-container text-body-2-mobile text-body-2-desktop"]').text
-    flavornotes = driver.find_element_by_xpath('//ul[@class="taste-features"]/li').text
     price = driver.find_element_by_xpath('//span[@class="product-price"]').text
     weight = driver.find_element_by_xpath('//span[@class="product-size"]').text
+    location = driver.find_element_by_xpath('//div[@class="location"]/div[2]').text
+    roasternotes = driver.find_element_by_xpath('//div[@class="roaster-notes-body"]').text
+    blend_single = driver.find_element_by_xpath('//a[@data-reactid="121"]').text
+    roastlevel = driver.find_element_by_xpath('//div[@data-reactid="209"]').text
+    classification = driver.find_element_by_xpath('//div[@data-reactid="216"]').text
+
+    try:
+        flavornotes = driver.find_element_by_xpath('//ul[@class="taste-features"]/li').text
+    except:
+        flavornotes = 'none'
+
+    add_info = driver.find_elements_by_xpath('//div[@class="coffee-info-list"]/ul/li/div')
+    extra = [info.text for info in add_info]
 
     coffee['name'] = name
     coffee['roaster'] = roaster
     coffee['descriptor'] = descriptor
-    coffee['flavornotes'] = flavornotes
     coffee['price'] = price
     coffee['weight'] = weight
+    coffee['location'] = location
+    coffee['roasternotes'] = roasternotes
+    coffee['blend_single'] = blend_single
+    coffee['roastlevel'] = roastlevel
+    coffee['classification'] = classification
+    coffee['flavornotes'] = flavornotes
+    coffee['extra'] = extra
+    writer.writerow(coffee.values())
+    i += 1
 
     print(coffee)
+    print('Coffee ' + str(i) + ' of ' + str(number))
     print('-' * 50)
+
+
+csv_file.close()
+driver.close()
