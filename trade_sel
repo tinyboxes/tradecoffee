@@ -26,7 +26,7 @@ writer = csv.writer(csv_file)
 
 # Navigate to product webpage
 i = 0
-for url in urls[:10]:
+for url in urls:
     driver.get(url)
 
     # Initialize an empty dictionary for each coffee
