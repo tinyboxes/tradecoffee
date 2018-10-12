@@ -33,6 +33,7 @@ for url in urls:
     coffee = {}
 
     # Use relative xpath to locate the title, text, username, date.
+
     name = driver.find_element_by_xpath('//h1[@class="product-name text-display-2-mobile text-display-2-desktop"]').text
     roaster = driver.find_element_by_xpath('//h2[@class="roaster-name text-title-mobile text-title-desktop"]').text
     descriptor = driver.find_element_by_xpath('//div[@class="description-container text-body-2-mobile text-body-2-desktop"]').text
@@ -67,7 +68,6 @@ for url in urls:
     writer.writerow(coffee.values())
     i += 1
 
-    print(coffee)
     print('Coffee ' + str(i) + ' of ' + str(number))
     print('-' * 50)
 
